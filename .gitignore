@@ -1,0 +1,73 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de configuración de entorno (variables sensibles)
+.env
+
+# Archivos de base de datos SQLite
+db.sqlite3
+
+# Archivos de migraciones (normalmente se versionan, pero puedes ignorar cachés)
+migrations/__pycache__/
+migrations/*.pyc
+
+# Archivos estáticos compilados (si usas collectstatic)
+staticfiles/
+static/
+
+# Archivos de logs
+*.log
+
+# Archivos temporales y de backup
+*.bak
+*.swp
+*~
+*.tmp
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Carpetas y archivos de IDEs y editores comunes
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Node modules (si usas frontend con node)
+node_modules/
+
+# Otros archivos que no se deben versionar
+*.pot
+*.mo
+*.cache
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Pytest cache
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Celery beat schedule file
+celerybeat-schedule
+
+# Django stuff:
+*.log
+local_settings.py
+
+# VS Code settings folder
+.vscode/

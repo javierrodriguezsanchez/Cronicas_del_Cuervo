@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<title>Ejemplo</title>
+{% endblock %}
+
+{% block body %}
+<h1>Este es un ejemplo</h1>
+
+<form action="{% url 'ejemplo' %}" method="post">
+    {% csrf_token %}
+    {{form}}
+    <input type = 'submit'>
+</form>
+
+{% for n in lista%}
+<p>
+    {{n}}
+</p>
+{% endfor %}
+
+{% endblock %}
+
+
+{% block static %}
+<style>
+h1{
+    color:red
+}
+</style>
+{% endblock %}
