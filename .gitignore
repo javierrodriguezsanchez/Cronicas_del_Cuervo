@@ -20,10 +20,6 @@ db.sqlite3
 migrations/__pycache__/
 migrations/*.pyc
 
-# Archivos estáticos compilados (si usas collectstatic)
-staticfiles/
-static/
-
 # Archivos de logs
 *.log
 
