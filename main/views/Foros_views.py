@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django import forms
 from main.models import Foros_models
-#from django.contrib.auth.decorators import login_required  
+from django.contrib.auth.decorators import login_required  
 #aqui hay que crear el crearhilo,detalle_hilo,buscar_hilos
 """
 Hilo= Foros_models.Hilo 
@@ -96,9 +96,7 @@ def listado_hilos(request):
     return render(request, 'Foros/listado.html', {'hilos': hilos})
     
 
-# Vista para crear hilo (protegida con login) "ESTO DEBERIA TENER LOGGIN? SINCERAMENTE NO ME GUSTA
-# PEDIR EL NOMBRE DE USUARIO BAJO EL QUE PUBLICAR SERIA MEJOR PARA MAS LIBERTAD "
-#@login_required
+@login_required
 def crear_hilo(request):  
     if request.method == 'POST':
         form = HiloForm(request.POST)
