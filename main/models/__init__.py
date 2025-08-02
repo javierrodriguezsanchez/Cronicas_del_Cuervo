@@ -2,6 +2,9 @@ import os
 import importlib
 from django.db import models as django_models
 
+#Este ultimo import fue sugerido por deepseek, descomentarlo no resuelve el bug
+#from .Foros_models import Hilo, Respuesta, Tag
+
 # Ruta absoluta al directorio actual (models/)
 directorio = os.path.dirname(__file__)
 

@@ -1,0 +1,25 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.forum-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.card {
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+.badge {
+    font-weight: normal;
+}
