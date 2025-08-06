@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Editar Diario{% endblock %}
+
+{% block content %}
+<h1>Editar Diario #{{ journal.pk }}</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="button">Guardar Cambios</button>
+  <a href="{% url 'admin_journals' %}">Cancelar</a>
+</form>
+{% endblock %}

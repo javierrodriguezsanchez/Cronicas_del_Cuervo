@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Descarga de Diarios</title>
+  <style>
+    .button { background: #357EDD; color: white; padding: .5em 1em; border-radius: 4px; text-decoration: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: .5em; }
+  </style>
+</head>
+<body>
+  <h1>Diarios Semanales</h1>
+
+  {% if journals %}
+    <h2>Último Diario</h2>
+    <a href="{% url 'download_journal_file' journals.0.pk %}" class="button">
+      Descargar #{{ journals.0.pk }} – {{ journals.0.uploaded_at|date:"d/m/Y H:i" }}
+    </a>
+
+    {% if journals|length > 1 %}
+      <h2>Diarios Anteriores</h2>
+      <table>
+        <tr><th>ID</th><th>Fecha</th><th>Descargar</th></tr>
+        {% for j in journals|slice:"1:" %}
+          <tr>
+            <td>{{ j.pk }}</td>
+            <td>{{ j.uploaded_at|date:"d/m/Y H:i" }}</td>
+            <td>
+              <a href="{% url 'download_journal_file' j.pk %}" class="button">#{{ j.pk }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+  {% else %}
+    <p>No hay diarios disponibles.</p>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Gestión de Diarios{% endblock %}
+
+{% block content %}
+
+
+<h1>Gestión de Diarios Semanales</h1>
+
+<form method="get" action="{% url 'export_news_to_word' %}">
+  <button type="submit">📄 Noticias de la semana</button>
+</form>
+
+<hr>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.file.label_tag }} {{ form.file }}
+  <button name="upload" class="button">Subir Nuevo Diario</button>
+</form>
+
+<hr>
+
+<h2>Diarios Existentes</h2>
+
+<table>
+  <tr><th>ID</th><th>Fecha Subida</th><th>Archivo</th><th>Acciones</th></tr>
+  {% for j in journals %}
+  <tr>
+    <td>{{ j.pk }}</td>
+    <td>{{ j.uploaded_at|date:"d/m/Y H:i" }}</td>
+    <td><a href="{{ j.file.url }}">{{ j.file.name|slice:"8:" }}</a></td>
+    <td>
+      <a href="{% url 'edit_journal' j.pk %}">Editar</a> |
+      <a href="{% url 'delete_journal' j.pk %}">Eliminar</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No hay diarios subidos.</td></tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

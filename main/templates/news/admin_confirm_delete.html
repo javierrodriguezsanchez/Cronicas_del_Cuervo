@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Eliminar Diario{% endblock %}
+
+{% block content %}
+  <h1>Eliminar Diario #{{ journal.pk }}</h1>
+  <p>¿Seguro que deseas eliminar este diario?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="button">Sí, eliminar</button>
+    <a href="{% url 'admin_journals' %}">Cancelar</a>
+  </form>
+{% endblock %}
