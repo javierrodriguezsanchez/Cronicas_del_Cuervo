@@ -24,7 +24,7 @@ LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lym8@4f^z(@6zd@^7e-qur57s=r3_e@*j0$e)o8bl=@sg9r$1%'
+SECRET_KEY = 'django-insecure-3m*@o_adre_ctp9y&44dcxkj+n6*vi%ncr@^styb)-**5@0&1)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'main.apps.MainConfig',
+    'main',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +52,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'Cronicas_del_Cuervo.urls'
