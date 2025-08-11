@@ -1,7 +1,10 @@
-{% extends "admin/base_site.html" %}
-{% block title %}Eliminar Diario{% endblock %}
+{% extends 'layout.html' %}
 
-{% block content %}
+{% block head %}
+<title>Eliminar Diario</title>
+{% endblock %}
+
+{% block body %}
   <h1>Eliminar Diario #{{ journal.pk }}</h1>
   <p>¿Seguro que deseas eliminar este diario?</p>
   <form method="post">

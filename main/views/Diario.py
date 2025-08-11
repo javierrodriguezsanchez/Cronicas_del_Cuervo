@@ -1,13 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import FileResponse, Http404, HttpResponse
-from django.contrib.admin.views.decorators import staff_member_required
 from datetime import datetime, timedelta
 from docx import Document
 
-from main.models.models import WeeklyJournal, Noticia, Categoría, WeeklyJournalForm
+from main.models import WeeklyJournal, Noticia, Categoría
+from django import forms
+
+class WeeklyJournalForm(forms.ModelForm):
+    class Meta:
+        model = WeeklyJournal
+        fields = ['file']
 
 # --- Admin: List + Create ---
-@staff_member_required
 def admin_journals(request):
     if request.method == 'POST' and 'upload' in request.POST:
         form = WeeklyJournalForm(request.POST, request.FILES)
@@ -24,7 +28,6 @@ def admin_journals(request):
     })
 
 # --- Admin: Edit existing ---
-@staff_member_required
 def edit_journal(request, pk):
     journal = get_object_or_404(WeeklyJournal, pk=pk)
     if request.method == 'POST':
@@ -41,7 +44,6 @@ def edit_journal(request, pk):
     })
 
 # --- Admin: Delete existing ---
-@staff_member_required
 def delete_journal(request, pk):
     journal = get_object_or_404(WeeklyJournal, pk=pk)
     if request.method == 'POST':
@@ -68,7 +70,6 @@ def download_journal_file(request, pk):
     )
 
 # --- Admin: Export weekly news document ---
-@staff_member_required
 def export_news_to_word(request):
     document = Document()
     document.add_heading('Noticias organizadas por categoría', level=1)
@@ -102,6 +103,5 @@ def export_news_to_word(request):
     return response
 
 # --- Admin: Tools page ---
-@staff_member_required
 def admin_news_tools(request):
     return render(request, 'admin/news/export_news.html')

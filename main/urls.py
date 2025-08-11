@@ -3,13 +3,14 @@ from . import views
 
 urlpatterns = [
     # Admin-only CRUD for journals
-    path('journals/', views.admin_journals, name='admin_journals'),
-    path('journals/<int:pk>/edit/', views.edit_journal, name='edit_journal'),
-    path('journals/<int:pk>/delete/', views.delete_journal, name='delete_journal'),
-    path('admin/noticias-a-word/', views.export_news_to_word, name='export_news_to_word'),
-    path('admin/herramientas-noticias/', views.admin_news_tools, name='admin_news_tools'),
+        path('ejemplo',views.VistaEjemplo,name='ejemplo'),
 
-    # Public download page & file
-    path('descargar-diario/', views.public_journal_page, name='public_journal_page'),
-    path('descargar-diario/<int:pk>/', views.download_journal_file, name='download_journal_file'),
+        path('journals/', views.admin_journals, name='admin_journals'),
+        path('journals/<int:pk>/edit/', views.edit_journal, name='edit_journal'),
+        path('journals/<int:pk>/delete/', views.delete_journal, name='delete_journal'),
+        path('admin/noticias-a-word/', views.export_news_to_word, name='export_news_to_word'),
+
+        # Public download page & file
+        path('descargar-diario/', views.public_journal_page, name='public_journal_page'),
+        path('descargar-diario/<int:pk>/', views.download_journal_file, name='download_journal_file'),
 ]

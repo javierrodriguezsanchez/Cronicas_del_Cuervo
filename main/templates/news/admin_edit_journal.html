@@ -1,7 +1,10 @@
-{% extends "admin/base_site.html" %}
-{% block title %}Editar Diario{% endblock %}
+{% extends 'layout.html' %}
 
-{% block content %}
+{% block head %}
+<title>Editar Diario</title>
+{% endblock %}
+
+{% block body %}
 <h1>Editar Diario #{{ journal.pk }}</h1>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
