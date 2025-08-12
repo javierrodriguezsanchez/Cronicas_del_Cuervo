@@ -1,7 +1,7 @@
-{%extends "layout.html" %}
+{%extends "Base_Foros.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
+{% block head %}
+{{ block.super }}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +31,8 @@
         }
     </style>
 </head>
+{% endblock %}
+{% block content %}
 <body>
     <div class="container">
         <div class="forum-form">
@@ -74,4 +76,9 @@
         </div>
     </footer>
 </body>
-</html>
+<footer class="forum-footer bg-light text-center">
+    <div class="container">
+        <p class="mb-0">Foro de la comunidad © {% now "Y" %}</p>
+    </div>
+</footer>
+{% endblock %}

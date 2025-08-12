@@ -10,5 +10,5 @@ def login_view(request):
             login(request, user)
             return redirect("home")  # Redirige a una vista principal
         else:
-            return render(request, "Autentificar/Login_temp.html", {"error": "Credenciales inválidas."})
-    return render(request, "Autentificar/Login_temp.html")
+            return render(request, "Auths/Login_temp.html", {"error": "Credenciales inválidas."})
+    return render(request, "Auths/Login_temp.html")

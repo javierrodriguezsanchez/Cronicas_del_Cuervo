@@ -14,11 +14,11 @@ def registro_view(request):
             return redirect('login')
         else:
             # En lugar de redirigir, mostramos los errores en el mismo template
-            return render(request, 'Autentificar/Registro_temp.html', {'form': form})
+            return render(request, 'Auths/Registro_temp.html', {'form': form})
     
     # GET request: mostrar formulario vacío
     form = UserCreationForm()
-    return render(request, 'Autentificar/Registro_temp.html', {'form': form})
+    return render(request, 'Auths/Registro_temp.html', {'form': form})
 
 
 def registro(request):

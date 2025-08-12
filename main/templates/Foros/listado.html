@@ -1,140 +1,140 @@
-{%comment%}{%extends "layout.html" %}{%endcomment%}
+{% extends "Base_Foros.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foro de Discusión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-bottom: 60px;
-        }
-        .forum-header {
-            background-color: #fff;
-            border-bottom: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-            margin-bottom: 20px;
-        }
-        .card {
-            border-radius: 8px;
-            transition: transform 0.2s;
-            margin-bottom: 15px;
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,.1);
-        }
-        .badge {
-            font-weight: normal;
-            margin-right: 5px;
-        }
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: white;
-            padding: 10px 0;
-            border-top: 1px solid #dee2e6;
-        }
-        .pagination {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="forum-header">
-            <h1 class="text-center">Foro de Discusión</h1>
-            <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'crear_hilo' %}" class="btn btn-primary">Nuevo Tema</a>
-                <form class="d-flex" method="GET" action="{% url 'listado_hilos' %}">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar temas..." value="{{ request.GET.q }}">
-                    <button class="btn btn-outline-success" type="submit">Buscar</button>
-                </form>
-            </div>
-        </header>
 
-        <div class="forum-list">
-            {% for hilo in hilos %}
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h5 class="card-title">
-                                <a href="{% url 'detalle_hilo' hilo.pk %}">{{ hilo.titulo }}</a>
-                                {% if hilo.cerrado %}
-                                <span class="badge bg-danger">Cerrado</span>
-                                {% endif %}
-                            </h5>
-                            <p class="card-text text-muted">
-                                Por <strong>{{ hilo.autor.username }}</strong> | 
-                                {{ hilo.fecha_creacion|date:"d M Y H:i" }}
-                            </p>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-info text-dark">
-                                {{ hilo.respuestas.count }} respuestas
-                            </span>
-                            <div class="mt-2">
-                                <small class="text-muted">
-                                    Última respuesta: {{ hilo.ultima_respuesta|timesince }}
-                                </small>
-                            </div>
-                        </div>
+{% block title %}Discusión | Crónicas del Cuervo{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .forum-header {
+        background-color: #fff;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        margin-bottom: 20px;
+    }
+     .forum-header h1 {
+        color: #0b5ed7; 
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .card {
+        border-radius: 8px;
+        transition: transform 0.2s;
+        margin-bottom: 15px;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+    .badge {
+        font-weight: normal;
+        margin-right: 5px;
+    }
+    .forum-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        padding: 10px 0;
+        border-top: 1px solid #dee2e6;
+    }
+    .pagination {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="forum-header">
+        <h1 class="text-center">Foro de Discusión</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{% url 'crear_hilo' %}" class="btn btn-primary">Nuevo Tema</a>
+            <form class="d-flex" method="GET" action="{% url 'listado_hilos' %}">
+                <input class="form-control me-2" type="search" name="q" placeholder="Buscar temas..." value="{{ request.GET.q }}">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="forum-list">
+        {% for hilo in hilos %}
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">
+                            <a href="{% url 'detalle_hilo' hilo.pk %}">{{ hilo.titulo }}</a>
+                            {% if hilo.cerrado %}
+                            <span class="badge bg-danger">Cerrado</span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text text-muted">
+                            Por <strong>{{ hilo.autor.username }}</strong> | 
+                            {{ hilo.fecha_creacion|date:"d M Y H:i" }}
+                        </p>
                     </div>
-                    <div class="mt-2">
-                        {% for tag in hilo.tags.all %}
-                        <span class="badge bg-secondary">{{ tag.nombre }}</span>
-                        {% endfor %}
+                    <div class="text-end">
+                        <span class="badge bg-info text-dark">
+                            {{ hilo.respuestas.count }} respuestas
+                        </span>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                Última respuesta: {{ hilo.ultima_respuesta|timesince }}
+                            </small>
+                        </div>
                     </div>
                 </div>
+                <div class="mt-2">
+                    {% for tag in hilo.tags.all %}
+                    <span class="badge bg-secondary">{{ tag.nombre }}</span>
+                    {% endfor %}
+                </div>
             </div>
-            {% empty %}
-            <div class="alert alert-info text-center">
-                No hay hilos disponibles. ¡Sé el primero en crear uno!
-            </div>
-            {% endfor %}
         </div>
-
-        <!-- Paginación -->
-        <nav aria-label="Paginación de foros">
-            <ul class="pagination justify-content-center">
-                {% if hilos.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; Primera</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ hilos.previous_page_number }}">Anterior</a>
-                </li>
-                {% endif %}
-                
-                <li class="page-item disabled">
-                    <span class="page-link">
-                        Página {{ hilos.number }} de {{ hilos.paginator.num_pages }}
-                    </span>
-                </li>
-                
-                {% if hilos.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ hilos.next_page_number }}">Siguiente</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ hilos.paginator.num_pages }}">Última &raquo;</a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% empty %}
+        <div class="alert alert-info text-center">
+            No hay hilos disponibles. ¡Sé el primero en crear uno!
+        </div>
+        {% endfor %}
     </div>
 
-    <footer class="bg-light text-center">
-        <div class="container">
-            <p class="mb-0">Foro de la comunidad © {% now "Y" %}</p>
-        </div>
-    </footer>
-</body>
-</html>
+    <!-- Paginación -->
+    <nav aria-label="Paginación de foros">
+        <ul class="pagination justify-content-center">
+            {% if hilos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ hilos.previous_page_number }}">Anterior</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Página {{ hilos.number }} de {{ hilos.paginator.num_pages }}
+                </span>
+            </li>
+            
+            {% if hilos.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ hilos.next_page_number }}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ hilos.paginator.num_pages }}">Última &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<footer class="forum-footer bg-light text-center">
+    <div class="container">
+        <p class="mb-0">Foro de la comunidad © {% now "Y" %}</p>
+    </div>
+</footer>
+{% endblock %}

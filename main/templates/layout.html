@@ -1,71 +1,18 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Crónicas del Cuervo{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{% static 'style.css' %}" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background-color: #f2f4f5;
-            color: #333;
-        }
-        header {
-            background-color: #111827;
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        nav a {
-            color: #93c5fd;
-            text-decoration: none;
-            margin-left: 1rem;
-        }
-        .container {
-            padding: 2rem;
-        }
-        .error {
-            color: #dc2626;
-        }
-    </style>
-</head>
-<body>
 
-    <header>
-        <div><strong>📘 Crónicas del Cuervo</strong></div>
-        <nav>
-            {% if user.is_authenticated %}
-                Bienvenido {{ user.username }} |
-                <div class="d-flex align-items-center">
-                <!-- Formulario de logout -->
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-btn">
-                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
-                    </button>
-                </form>
-            </div>  
-            {% else %}
-                <a href="{% url 'login' %}">Iniciar sesión</a>
-                <a href="{% url 'registro' %}">Registrarse</a>
-            {% endif %}
-        </nav>
-    </header>
-
-    <div class="container">
+<html>
+    <head>
+        {% block head %}
+        {% endblock %}
+        <link href="{% static 'style.css' %}"  rel="stylesheet" >
+    </head>
+    <body>
         {% block body %}
         {% endblock %}
-    </div>
-
-</body>
+    </body>
 </html>
-
-
 
 {% block static %}
 {% endblock %}
