@@ -5,6 +5,8 @@ from django import forms
 from main.models import Foros_models
 from django.contrib.auth.decorators import login_required  
 
+
+
 # modelos
 Hilo = Foros_models.Hilo
 Tag = Foros_models.Tag  
@@ -60,35 +62,17 @@ def crear_hilo(request):
     return render(request, 'Foros/crear_hilo.html', {'form': form})
 
 
-# main/views/Foros_views.py
-from django.shortcuts import redirect, get_object_or_404
-from main.models import Foros_models
-from django.contrib.auth.decorators import login_required
-
 Respuesta = Foros_models.Respuesta
 
-@login_required  # Comenta esto temporalmente si quieres probar sin login
+@login_required
 def responder_hilo(request, pk):
-    """Vista temporal para respuestas sin autenticación"""
-    # Obtener el hilo
     hilo = get_object_or_404(Hilo, pk=pk)
-    
-    # Asignar usuario temporal si no hay autenticación
-    if not request.user.is_authenticated:
-        from django.contrib.auth.models import User
-        default_user = User.objects.first() or User.objects.create_user(
-            'temp_user', 'temp@example.com', 'temp_pass'
-        )
-    else:
-        default_user = request.user
-    
     if request.method == 'POST':
         contenido = request.POST.get('contenido')
         if contenido:
-            # Crear la respuesta
             Respuesta.objects.create(
                 hilo=hilo,
-                autor=default_user,
+                autor=request.user,
                 contenido=contenido
             )
     
