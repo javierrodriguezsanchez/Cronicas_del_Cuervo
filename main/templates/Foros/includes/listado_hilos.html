@@ -1,0 +1,78 @@
+
+<div class="forum-list">
+    {% for hilo in hilos %}
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5 class="card-title">
+                        <a href="{% url 'detalle_hilo' hilo.pk %}">{{ hilo.titulo }}</a>
+                        {% if hilo.cerrado %}
+                        <span class="badge bg-danger">Cerrado</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text text-muted">
+                        Por <strong>{{ hilo.autor.username }}</strong> | 
+                        {{ hilo.fecha_creacion|date:"d M Y H:i" }}
+                    </p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-info text-dark">
+                        {{ hilo.respuestas.count }} respuestas
+                    </span>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Última respuesta: {{ hilo.ultima_respuesta|timesince }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2">
+                {% for tag in hilo.tags.all %}
+                <a href="{% url 'hilos_por_tag' tag.slug %}" class="badge bg-secondary">
+                    {{ tag.nombre }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info text-center">
+        {% if no_results_message %}
+            {{ no_results_message }}
+        {% else %}
+            No hay hilos disponibles. ¡Sé el primero en crear uno!
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% if hilos.paginator.num_pages > 1 %}
+<nav aria-label="Paginación de foros">
+    <ul class="pagination justify-content-center">
+        {% if hilos.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; Primera</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ hilos.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item disabled">
+            <span class="page-link">
+                Página {{ hilos.number }} de {{ hilos.paginator.num_pages }}
+            </span>
+        </li>
+        
+        {% if hilos.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ hilos.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ hilos.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Última &raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

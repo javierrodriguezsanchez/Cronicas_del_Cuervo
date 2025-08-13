@@ -1,6 +1,87 @@
 {% extends "Base_Foros.html" %}
 {% load static %}
 
+{% block title %}{% if tag_slug %}Hilos con etiqueta "{{ tag_slug }}"{% else %}Foro de Discusión{% endif %} | Crónicas del Cuervo{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .forum-header {
+        background-color: #fff;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        margin-bottom: 20px;
+    }
+     .forum-header h1 {
+        color: #0b5ed7; 
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .card {
+        border-radius: 8px;
+        transition: transform 0.2s;
+        margin-bottom: 15px;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+    .badge {
+        font-weight: normal;
+        margin-right: 5px;
+    }
+    .forum-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        padding: 10px 0;
+        border-top: 1px solid #dee2e6;
+    }
+    .pagination {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <header class="forum-header">
+        {% if tag_slug %}
+            <h1 class="text-center">Hilos con etiqueta: <span class="badge bg-primary">{{ tag_slug }}</span></h1>
+        {% else %}
+            <h1 class="text-center">Foro de Discusión</h1>
+        {% endif %}
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{% url 'crear_hilo' %}" class="btn btn-primary">Nuevo Tema</a>
+            
+            <form class="d-flex" method="GET" action="{% url 'listado_hilos' %}">
+                <input type="hidden" name="tag" value="{{ tag_slug }}">
+                <input class="form-control me-2" type="search" name="q" placeholder="Buscar temas..." value="{{ query }}">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+        </div>
+    </header>
+
+    {% include 'Foros/includes/listado_hilos.html' %}
+    
+    {% if tag_slug %}
+    <div class="text-center mt-4">
+        <a href="{% url 'listado_hilos' %}" class="btn btn-outline-secondary">
+            Ver todos los temas
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{%comment%}
 {% block title %}Discusión | Crónicas del Cuervo{% endblock %}
 
 {% block head %}
@@ -64,7 +145,7 @@
         {% for hilo in hilos %}
         <div class="card">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">
                             <a href="{% url 'detalle_hilo' hilo.pk %}">{{ hilo.titulo }}</a>
@@ -90,7 +171,9 @@
                 </div>
                 <div class="mt-2">
                     {% for tag in hilo.tags.all %}
-                    <span class="badge bg-secondary">{{ tag.nombre }}</span>
+                    <a href="{% url 'hilos_por_tag' tag.slug %}" class="badge bg-secondary text-decoration-none">
+                        {{ tag.nombre }}
+                    </a>
                     {% endfor %}
                 </div>
             </div>
@@ -134,3 +217,5 @@
 
 
 {% endblock %}
+
+{%endcomment%}
