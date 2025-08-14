@@ -2,6 +2,7 @@ import os
 import importlib
 from django.db import models as django_models
 
+
 # Ruta absoluta al directorio actual (models/)
 directorio = os.path.dirname(__file__)
 
