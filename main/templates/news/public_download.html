@@ -1,40 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Descarga de Diarios</title>
-  <style>
-    .button { background: #357EDD; color: white; padding: .5em 1em; border-radius: 4px; text-decoration: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: .5em; }
-  </style>
-</head>
-<body>
-  <h1>Diarios Semanales</h1>
+{% extends 'layout.html' %}
 
-  {% if journals %}
-    <h2>Último Diario</h2>
-    <a href="{% url 'download_journal_file' journals.0.pk %}" class="button">
-      Descargar #{{ journals.0.pk }} – {{ journals.0.uploaded_at|date:"d/m/Y H:i" }}
+{% block head %}
+<title>Descarga de Diarios</title>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+<style>
+  /* Header */
+  .site-header { background-color: black; color: white; text-align: center; padding: 1rem;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-family: 'Creepster', cursive; font-weight: normal; }
+
+  h1 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin-top: 1rem; text-align: center; color: #591010ff; }
+  h2 { font-size: clamp(1.4rem, 2.5vw, 2rem); margin-top: 1rem; text-align: center; }
+
+  .btn-primary { background-color: #591010ff; color: white; padding:0.8rem 1.5rem; border:none; border-radius:5px;
+    font-size:clamp(1rem,2vw,1.2rem); cursor:pointer; transition: all 0.3s ease; text-decoration:none; display:inline-block; text-align:center; }
+  .btn-primary:hover { background-color:#180707ff; box-shadow:0 0 20px rgba(255,0,0,0.8); text-shadow:0 0 5px rgba(255,0,0,0.8); transform: scale(1.05); }
+
+  table { width:100%; border-collapse:collapse; margin-top:1rem; }
+  table, th, td { border:1px solid #ddd; }
+  th, td { padding:0.8rem; text-align:center; }
+  th { background-color:#f4f4f4; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="site-header">Crónicas del Cuervo</div>
+
+<h1>Diario Semanal</h1>
+
+{% if journals %}
+  <!-- Botón de descarga del último diario -->
+  <div style="text-align:center; margin-top:2rem; margin-bottom:2rem;">
+    <a href="{% url 'download_journal_file' journals.0.pk %}" class="btn-primary">
+      Diario de la Semana: {{ journals.0.title }}
     </a>
+  </div>
 
-    {% if journals|length > 1 %}
-      <h2>Diarios Anteriores</h2>
-      <table>
-        <tr><th>ID</th><th>Fecha</th><th>Descargar</th></tr>
-        {% for j in journals|slice:"1:" %}
-          <tr>
-            <td>{{ j.pk }}</td>
-            <td>{{ j.uploaded_at|date:"d/m/Y H:i" }}</td>
-            <td>
-              <a href="{% url 'download_journal_file' j.pk %}" class="button">#{{ j.pk }}</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-  {% else %}
-    <p>No hay diarios disponibles.</p>
+  {% if journals|length > 1 %}
+    <h2>Diarios Anteriores</h2>
+    <table>
+      <tr><th>Fecha</th><th>Título</th><th>Archivo</th></tr>
+      {% for j in journals|slice:"1:" %}
+        <tr>
+          <td>{{ j.uploaded_at|date:"d/m/Y" }}</td>
+          <td>{{ j.title }}</td>
+          <td>
+            <a href="{% url 'download_journal_file' j.pk %}" class="btn-primary">Descargar</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
   {% endif %}
-</body>
-</html>
+{% else %}
+  <p style="text-align:center; margin-top:2rem;">No hay diarios disponibles.</p>
+{% endif %}
+{% endblock %}

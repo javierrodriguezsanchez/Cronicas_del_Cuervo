@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import FileResponse, Http404, HttpResponse
+from django.http import FileResponse, HttpResponse
 from datetime import datetime, timedelta
 from docx import Document
 
@@ -13,7 +13,7 @@ class WeeklyJournalForm(forms.ModelForm):
 
 # --- Admin: List + Create ---
 def admin_journals(request):
-    if request.method == 'POST' and 'upload' in request.POST:
+    if request.method == 'POST':
         form = WeeklyJournalForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
@@ -27,21 +27,16 @@ def admin_journals(request):
         'journals': journals,
     })
 
-# --- Admin: Edit existing ---
+# --- Admin: Edit existing (ahora ACTUALIZA vía POST desde la tabla) ---
 def edit_journal(request, pk):
+    """
+    Reemplaza el archivo del diario sin cambiar la fecha original.
+    """
     journal = get_object_or_404(WeeklyJournal, pk=pk)
-    if request.method == 'POST':
-        form = WeeklyJournalForm(request.POST, request.FILES, instance=journal)
-        if form.is_valid():
-            form.save()
-            return redirect('admin_journals')
-    else:
-        form = WeeklyJournalForm(instance=journal)
-
-    return render(request, 'news/admin_edit_journal.html', {
-        'form': form,
-        'journal': journal,
-    })
+    if request.method == 'POST' and 'file' in request.FILES:
+        journal.file = request.FILES['file']
+        journal.save(update_fields=['file'])  # No toca uploaded_at
+    return redirect('admin_journals')
 
 # --- Admin: Delete existing ---
 def delete_journal(request, pk):
@@ -56,6 +51,9 @@ def delete_journal(request, pk):
 # --- Public page: list + latest download ---
 def public_journal_page(request):
     journals = WeeklyJournal.objects.order_by('-uploaded_at')
+    # Agregamos un atributo title sin la extensión del archivo
+    for j in journals:
+        j.title = j.file.name.split('/')[-1].rsplit('.', 1)[0]
     return render(request, 'news/public_download.html', {
         'journals': journals,
     })
