@@ -1,263 +1,228 @@
-{% extends 'layout.html' %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
-{% block head %}
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin | Panel de Control</title>
-{% endblock %}
-
-{% block body %}
-<body>
-  <nav aria-label="Barra lateral administración">
-    <h1>Admin</h1>
-    <a href="#" class="disabled">Noticias</a>
-    <a href="#" class="disabled">Foros</a>
-    <a href="/admin/foros">Ir a Foros</a>
-    <hr style="margin:1rem 0;border:none;border-top:1px solid var(--light-gray)">
-    <a href="#add-publisher" class="add-pub">+ Agregar Publicador</a>
-    <a href="#" class="disabled">Gestionar Categorías</a>
-    <a href="#" class="disabled">Diario Semanal</a>
-    <a href="#" onclick="logout()">Cerrar Sesión</a>
-  </nav>
-
-  <main>
-    <!-- Colocar formulario arriba -->
-    <section class="section" aria-labelledby="add-publisher">
-      <h2 id="add-publisher">Agregar Nuevo Publicador</h2>
-      <form id="add-pub-form">
-        <div>
-          <label for="new-email">Correo Electrónico</label>
-          <input type="email" id="new-email" name="email" required />
-        </div>
-        <div>
-          <label for="new-nick">Nick</label>
-          <input type="text" id="new-nick" name="nick" required />
-        </div>
-        <div style="grid-column: span 2; text-align: right;">
-          <button type="submit">Crear</button>
-        </div>
-        <div id="generated-password" aria-live="polite"></div>
-      </form>
-    </section>
-
-    <section class="section publisher-list" aria-labelledby="publishers">
-      <h2 id="publishers">Publicadores Registrados</h2>
-      <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar publicador...">
-      </div>
-      <template id="publisher-template">
-        <div class="publisher">
-          <div class="publisher-info">
-            <span><strong>Nick:</strong> <span class="nick"></span></span>
-            <span><strong>Email:</strong> <span class="email"></span></span>
-          </div>
-          <div class="buttons">
-            <button disabled>Ver Noticias</button>
-            <button disabled>Quitar permisos</button>
-            <button class="reset-btn">Reiniciar Contraseña</button>
-            <button class="delete-btn" style="background: var(--danger);">Eliminar</button>
-          </div>
-        </div>
-      </template>
-    </section>
-  </main>
-
-  <footer>
-    &copy; <span id="year"></span> - Sistema de Noticias
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const publishers = [];
-    const listSection = document.querySelector('.publisher-list');
-    const template = document.getElementById('publisher-template');
-    const searchInput = document.getElementById('search-input');
-
-    function renderPublishers(filter = '') {
-      listSection.querySelectorAll('.publisher').forEach(e => e.remove());
-      publishers
-        .filter(pub => {
-          const term = filter.trim().toLowerCase();
-          return !term || pub.nick.toLowerCase().includes(term) || pub.email.toLowerCase().includes(term);
-        })
-        .forEach(pub => {
-          const clone = template.content.cloneNode(true);
-          clone.querySelector('.nick').textContent = pub.nick;
-          clone.querySelector('.email').textContent = pub.email;
-          clone.querySelector('.reset-btn').addEventListener('click', () => resetPassword(pub.email));
-          clone.querySelector('.delete-btn').addEventListener('click', () => deletePublisher(pub.email));
-          listSection.appendChild(clone);
-        });
-    }
-
-    searchInput.addEventListener('input', () => renderPublishers(searchInput.value));
-
-    function randomPassword() { return Math.random().toString(36).slice(-12); }
-
-    function resetPassword(email) {
-      const pwd = randomPassword();
-      alert(`Nueva contraseña para ${email}: ${pwd}`);
-    }
-
-    function deletePublisher(email) {
-      if (confirm(`¿Eliminar ${email}?`)) {
-        const idx = publishers.findIndex(p => p.email===email);
-        if(idx>-1) publishers.splice(idx,1);
-        renderPublishers(searchInput.value);
-      }
-    }
-
-    document.getElementById('add-pub-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const email = e.target.email.value.trim();
-      const nick = e.target.nick.value.trim();
-      if(email && nick) {
-        const pwd = randomPassword();
-        publishers.push({email, nick});
-        renderPublishers(searchInput.value);
-        document.getElementById('generated-password').textContent = `Contraseña: ${pwd}`;
-        e.target.reset();
-      }
-    });
-
-    function logout() { alert('Sesión cerrada'); window.location.href='/login'; }
-
-    renderPublishers();
-  </script>
-</body>
-{% endblock %}
-
-{% block static %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Admin - Diario Semanal</title>
   <style>
-    /* Variables de tema */
-    :root {
-      --bg-light: #f4f6fa;
-      --bg-white: #ffffff;
-      --text-dark: #2c3e50;
-      --primary: #1abc9c;
-      --primary-dark: #16a085;
-      --accent: #3498db;
-      --light-gray: #ecf0f1;
-      --danger: #e74c3c;
-      --font-base: 'Roboto', sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font-base);
-      background: var(--bg-light);
-      color: var(--text-dark);
-      display: flex;
-      min-height: 100vh;
-    }
-    /* Sidebar */
-    nav {
-      width: 260px;
-      background: var(--primary);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem 1rem;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-    }
-    nav h1 { font-size: 1.5rem; margin-bottom: 2rem; }
-    nav a {
-      color: #ecf0f1;
-      text-decoration: none;
-      margin: 0.5rem 0;
-      padding: 0.6rem 1rem;
-      border-radius: 4px;
-      transition: background 0.2s;
-      display: block;
-    }
-    nav a:hover { background: var(--primary-dark); }
-    nav a.disabled { opacity: 0.6; pointer-events: none; }
-    nav a.add-pub {
-      background: var(--accent);
-      margin-top: auto;
-      text-align: center;
-    }
-    /* Main content */
-    main { flex: 1; padding: 2rem; }
-    .section {
-      background: var(--bg-white);
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      margin-bottom: 1.5rem;
-      padding: 1.5rem;
-      transition: transform 0.2s;
-    }
-    .section:hover { transform: translateY(-2px); }
-    .section h2 {
-      margin-bottom: 1rem;
-      color: var(--primary);
-      font-size: 1.25rem;
-      border-bottom: 2px solid var(--light-gray);
-      padding-bottom: 0.5rem;
-    }
-    .buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    button {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.95rem;
-      cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: background 0.2s, transform 0.1s;
-    }
-    button:hover:not(:disabled) { background: var(--primary); transform: translateY(-1px); }
-    button:disabled { background: var(--light-gray); color: #95a5a6; cursor: not-allowed; box-shadow: none; }
-    /* Search bar */
-    .search-container { margin-bottom: 1rem; }
-    .search-container input {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--light-gray);
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    /* Publishers list */
-    .publisher-list .publisher {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 1rem;
-      align-items: center;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--light-gray);
-    }
-    .publisher:last-child { border-bottom: none; }
-    .publisher-info span { display: block; }
-    /* Formulario */
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      align-items: end;
-    }
-    form label { font-size: 0.9rem; margin-bottom: 0.3rem; display: block; }
-    form input {
-      padding: 0.6rem;
-      border: 1px solid var(--light-gray);
-      border-radius: 4px;
-      width: 100%;
-      font-size: 0.95rem;
-    }
-    #generated-password {
-      grid-column: span 2;
-      margin-top: 1rem;
-      font-weight: 500;
-      color: var(--primary-dark);
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: var(--light-gray);
-      font-size: 0.85rem;
-    }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f7f7fb; color:#222; margin:0; padding:0; }
+    header { background:#123456; color:#fff; padding:16px 24px; display:flex; align-items:center; gap:16px; }
+    header h1 { margin:0; font-size:20px; }
+    main { padding:24px; max-width:1200px; margin:20px auto; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.06); padding:16px; margin-bottom:16px; }
+    .grid { display:grid; gap:16px; grid-template-columns: 1fr 360px; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:8px 10px; border-bottom:1px solid #eee; }
+    .btn { display:inline-block; padding:8px 12px; border-radius:6px; text-decoration:none; cursor:pointer; }
+    .btn-primary { background:#0066cc; color:#fff; border:0; }
+    .btn-danger { background:#c0392b; color:#fff; border:0; }
+    .muted { color:#666; font-size:14px; }
+    .small { font-size:13px; color:#444; }
+    .center { text-align:center; }
+    .top-actions { display:flex; gap:10px; align-items:center; }
+    #publishers-table { width:100%; }
+    .info { font-size:13px; color:#333; margin-top:8px; }
+    .flash { padding:10px; margin-bottom:10px; border-radius:6px; }
+    .flash-success { background:#e6ffed; border:1px solid #c6f0cf; color:#0a6c2a; }
+    .flash-error { background:#ffecec; border:1px solid #f0c6c6; color:#8c1b1b; }
   </style>
-{% endblock %}
+</head>
+<body>
+
+<header>
+  <h1>Panel Admin — Diario Semanal</h1>
+  <div class="muted">Interfaz de administración</div>
+</header>
+
+<main>
+  <!-- Mensajes de Django -->
+  <div id="messages-area">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash {% if message.tags %}flash-{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Contraseña temporal (mostrada una sola vez) -->
+  {% if generated_password_for and generated_password_value %}
+    <div class="card">
+      <strong>Contraseña temporal generada</strong>
+      <div style="margin-top:8px;">
+        Contraseña para <strong>{{ generated_password_for }}</strong>:
+        <code style="font-size:15px; padding:6px 8px; background:#f5f5f5; border-radius:6px;">{{ generated_password_value }}</code>
+      </div>
+      <div class="muted" style="margin-top:8px;">Esta contraseña se muestra una sola vez por seguridad. Recomienda al publicador cambiarla al ingresar.</div>
+    </div>
+  {% endif %}
+
+  <div class="grid">
+
+    <!-- Columna principal -->
+    <section class="card">
+      <h2 style="margin-top:0;">Resumen</h2>
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div class="small">Publicadores: <strong>{{ publishers_count }}</strong></div>
+          <div class="small">Artículos publicados (últimos 10): <strong>{{ latest_articles_count }}</strong></div>
+        </div>
+        <div class="top-actions">
+          <a href="#" class="btn btn-primary" onclick="document.getElementById('add-pub-form').scrollIntoView();return false;">Agregar publicador</a>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0; border:none; border-top:1px solid #eee;" />
+
+      <h3 style="margin-bottom:8px;">Últimos artículos publicados</h3>
+      <table class="small" aria-live="polite">
+        <thead>
+          <tr><th>Título</th><th>Autor</th><th>Fecha</th></tr>
+        </thead>
+        <tbody>
+          {% for a in latest_articles %}
+            <tr>
+              <td><a href="/articles/{{ a.slug }}/" style="color:inherit;text-decoration:none;">{{ a.title }}</a></td>
+              <td class="muted">{{ a.author__email }}</td>
+              <td class="muted">{{ a.published_at }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="muted">No hay artículos publicados todavía.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <hr style="margin:12px 0; border:none; border-top:1px solid #eee;" />
+
+      <h3 style="margin-bottom:8px;">Edición semanal actual</h3>
+      {% if latest_issue %}
+        <div><strong>{{ latest_issue.title }}</strong> — {{ latest_issue.week_start }} {% if latest_issue.published %}(Publicado){% else %}(Borrador){% endif %}</div>
+      {% else %}
+        <div class="muted">No hay edición semanal todavía.</div>
+      {% endif %}
+
+      <hr style="margin:12px 0; border:none; border-top:1px solid #eee;" />
+
+      <h3 style="margin-bottom:8px;">Foros</h3>
+      <ul>
+        {% for f in forums %}
+          <li><strong>{{ f.title }}</strong> <span class="muted">({{ f.created_at }})</span></li>
+        {% empty %}
+          <li class="muted">No hay foros.</li>
+        {% endfor %}
+      </ul>
+
+    </section>
+
+    <!-- Columna lateral (formularios + listas) -->
+    <aside>
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="margin-top:0;">Agregar publicador</h3>
+        <form id="add-pub-form" method="post" action="{% url 'admin_dashboard' %}">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_publisher">
+          <div style="margin-bottom:8px;">
+            <label class="small">Email</label><br/>
+            <input type="email" name="email" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd;" placeholder="correo@ejemplo.edu">
+          </div>
+          <div style="margin-bottom:8px;">
+            <label class="small">Nick (visible)</label><br/>
+            <input type="text" name="nick" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd;" placeholder="apodo">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn btn-primary">Crear publicador</button>
+            <button type="button" class="btn" onclick="document.getElementById('reset-pub-form').scrollIntoView();">Reiniciar contraseña</button>
+          </div>
+          <div class="info">La contraseña se genera automáticamente y se mostrará una vez.</div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="margin-top:0;">Reiniciar contraseña</h3>
+        <form id="reset-pub-form" method="post" action="{% url 'admin_dashboard' %}">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="reset_password">
+          <div style="margin-bottom:8px;">
+            <label class="small">Email del publicador</label><br/>
+            <input type="email" name="email" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd;" placeholder="correo@ejemplo.edu">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn btn-primary">Reiniciar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">Publicadores (lista)</h3>
+        <div class="muted small">Número total: <strong id="pub-count">{{ publishers_count }}</strong></div>
+        <table id="publishers-table" class="small" style="margin-top:8px;">
+          <thead><tr><th>Nick</th><th>Email</th><th>Activo</th></tr></thead>
+          <tbody id="publishers-tbody">
+            <!-- Rellenado por JS -->
+          </tbody>
+        </table>
+      </div>
+    </aside>
+
+  </div> <!-- /.grid -->
+
+  <!-- Categorías -->
+  <div class="card">
+    <h3 style="margin-top:0;">Categorías</h3>
+    <ul>
+      {% for c in categories %}
+        <li>{{ c.name }}</li>
+      {% empty %}
+        <li class="muted">No hay categorías.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</main>
+
+<!-- Datos iniciales inyectados por Django -->
+<script id="initial-data" type="application/json">
+  {{ publishers_json|safe }}
+</script>
+
+<script>
+  (function(){
+    const el = document.getElementById('initial-data');
+    let publishers = [];
+    try { publishers = JSON.parse(el.textContent || "[]"); } catch(e) { console.error("Error parseando publishers_json:", e); publishers = []; }
+
+    const tbody = document.getElementById('publishers-tbody');
+    const pubCount = document.getElementById('pub-count');
+
+    function renderPublishers(list){
+      tbody.innerHTML = "";
+      list.forEach(function(p){
+        const tr = document.createElement('tr');
+        const nickTd = document.createElement('td');
+        nickTd.textContent = p.nick || "";
+        const emailTd = document.createElement('td');
+        emailTd.textContent = p.email || "";
+        const activeTd = document.createElement('td');
+        activeTd.textContent = p.is_active ? "Sí" : "No";
+        tr.appendChild(nickTd);
+        tr.appendChild(emailTd);
+        tr.appendChild(activeTd);
+        tbody.appendChild(tr);
+      });
+      if(pubCount) pubCount.textContent = list.length;
+    }
+
+    renderPublishers(publishers);
+
+    window.__admin_publishers = {
+      list: publishers,
+      refresh: function(newList){ publishers = newList || []; renderPublishers(publishers); }
+    };
+  })();
+</script>
+
+</body>
+</html>
