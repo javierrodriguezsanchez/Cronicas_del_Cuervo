@@ -1,13 +1,12 @@
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_http_methods
-
-from .models import PublisherProfile, Article, Category, Forum, WeeklyIssue
+from main.models import PublisherProfile, Article, Category, Forum, WeeklyIssue
 
 User = get_user_model()
 
