@@ -1,6 +1,12 @@
 from django.urls import path
-from . import views
+from .views.comentarios_noticias import (
+    comentarios_noticias,
+    agregar_comentario,
+    manejar_reaccion,
+)  # Importación correcta de las vistas locales
 
 urlpatterns = [
-    path('ejemplo',views.VistaEjemplo,name='ejemplo')
+    path('comentarios/', comentarios_noticias, name='comentarios'),
+    path('comentarios/agregar/', agregar_comentario, name='agregar_comentario'),
+    path('comentarios/reaccion/', manejar_reaccion, name='manejar_reaccion'),
 ]

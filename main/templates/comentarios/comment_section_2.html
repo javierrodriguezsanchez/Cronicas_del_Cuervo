@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Comentarios para Noticias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #f5f5f5;
+            --text: #333;
+            --text-light: #666;
+            --border: #ddd;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .back-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* News Selector */
+        .news-selector {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .news-selector h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .news-selector ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .news-selector li {
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .news-selector li:hover {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
+        }
+        
+        .news-selector a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            display: block;
+            transition: var(--transition);
+        }
+        
+        .news-selector a:hover {
+            color: var(--primary);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            margin: 50px 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--border);
+        }
+        
+        .empty-state h2 {
+            margin-bottom: 15px;
+            color: var(--text);
+            font-size: 28px;
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin: 0 auto 30px;
+            color: var(--text-light);
+            font-size: 18px;
+        }
+        
+        .load-news-btn {
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .load-news-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* News Section */
+        .news-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .news-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .news-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .news-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .news-content {
+            padding: 25px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        .news-content p {
+            margin-bottom: 20px;
+        }
+        
+        .news-footer {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .reaction-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .reaction-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .like-btn.active {
+            color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .dislike-btn.active {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        /* Comments Section */
+        .comments-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        /* Comment Form */
+        .comment-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--secondary);
+            border-radius: 8px;
+        }
+        
+        .form-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            min-height: 100px;
+            resize: vertical;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Auth Required Message */
+        .auth-required {
+            background-color: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .auth-required p {
+            margin-bottom: 10px;
+        }
+        
+        .auth-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Comments List */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .comment {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: white;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        .comment.reply {
+            margin-left: 40px;
+            border-left: 3px solid var(--primary);
+            padding-left: 15px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        
+        .comment.reply:before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+        
+        .reply-to {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-badge {
+            background-color: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .comment-date {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        
+        .comment-content {
+            margin-bottom: 15px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+        
+        .comment-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .comment-action:hover {
+            color: var(--primary);
+        }
+        
+        .comment-action.active {
+            color: var(--primary);
+        }
+
+        .comment-action.active i {
+            color: var(--success);
+        }
+
+        .reply-form {
+            margin-top: 15px;
+            padding-left: 30px;
+            display: none;
+        }
+        
+        .reply-form.active {
+            display: block;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-light);
+            font-size: 14px;
+            background: white;
+            padding: 20px;
+        }
+        
+        /* Login Section */
+        .login-section {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .login-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-control {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .login-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .login-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .news-title {
+                font-size: 24px;
+            }
+            
+            .news-content {
+                padding: 20px;
+            }
+            
+            .comment.reply {
+                margin-left: 20px;
+            }
+            
+            .comments-section {
+                padding: 20px;
+            }
+            
+            .news-selector ul {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header con botón de regreso -->
+        <div class="header">
+            <button class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Volver
+            </button>
+            <div class="logo">Diario Digital</div>
+        </div>
+        
+        <!-- Selector de noticias -->
+        <div class="news-selector">
+            <h3>Seleccionar Noticia</h3>
+            <ul id="news-list">
+                {% for noticia in noticias %}
+                <li>
+                    <a href="#" data-id="{{ noticia.id }}" onclick="loadNews({{ noticia.id }})">
+                        {{ noticia.titulo }}
+                    </a>
+                    <div class="news-meta">
+                        <span>{{ noticia.categoria }} • {{ noticia.fecha_publicacion|date:"d/m/Y" }}</span>
+                    </div>
+                </li>
+                {% empty %}
+                <li>No hay noticias disponibles</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <!-- Estado inicial - Sin noticia seleccionada -->
+        <div class="empty-state" id="empty-state">
+            <i class="fas fa-newspaper"></i>
+            <h2>No se ha seleccionado una noticia</h2>
+            <p>Por favor selecciona una noticia para ver su contenido completo y los comentarios asociados.</p>
+        </div>
+        
+        <!-- Contenido de la noticia seleccionada -->
+        <div class="news-card" id="news-card" style="display: none;">
+            <div class="news-header">
+                <span id="news-category" class="news-category"></span>
+                <h1 id="news-title" class="news-title"></h1>
+                <div class="news-meta">
+                    <span id="news-date" class="date"></span>
+                    <span class="author">
+                        <i class="fas fa-user"></i>
+                        <span id="news-author"></span>
+                    </span>
+                </div>
+            </div>
+            
+            <div id="news-content" class="news-content"></div>
+            
+            <div class="news-footer">
+                <button class="reaction-btn like-btn {% if usuario_ha_dado_like %}active{% endif %}" id="like-btn">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span id="like-count">{{ noticia_seleccionada.likes }}</span>
+            </button>
+            <button class="reaction-btn dislike-btn {% if usuario_ha_dado_dislike %}active{% endif %}" id="dislike-btn">
+                <i class="fas fa-thumbs-down"></i>
+                <span id="dislike-count">{{ noticia_seleccionada.dislikes }}</span>
+            </button>
+        </div>
+    </div>
+        
+        <!-- Sección de comentarios -->
+        <div class="comments-section" id="comments-section" style="display: none;">
+            <h2 class="section-title">Comentarios (<span id="comments-count">0</span>)</h2>
+            
+            <!-- Mensaje para usuarios no autenticados -->
+            <div id="auth-required-message" class="auth-required">
+                <p>Para comentar esta noticia o dar "like" o "dislike", necesitas estar suscrito.</p>
+                <a href="/accounts/login/" class="auth-link">Inicia sesión</a> or 
+                <a href="/accounts/signup/" class="auth-link">regístrate</a> para participar.
+            </div>
+            
+            <!-- Formulario de comentarios -->
+            <div id="comment-form-container" class="comment-form">
+                <h3 class="form-title">Deja tu comentario</h3>
+                <div class="form-group">
+                    <textarea id="comment-content" placeholder="Escribe tu comentario aquí..."></textarea>
+                </div>
+                <button class="submit-btn" id="submit-comment">Publicar comentario</button>
+            </div>
+            
+            <!-- Lista de comentarios -->
+            <div id="comments-list" class="comments-list"></div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Diario Digital &copy; 2025 - Todos los derechos reservados</p>
+        </div>
+
+        <!-- Modal de demostración -->
+        <div id="demo-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; width: 300px;">
+                <h3>Modo Demostración</h3>
+                <p>Estás usando el modo de demostración. Puedes probar todas las funciones como si estuvieras registrado.</p>
+                <button id="close-demo-modal" style="padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer;">Entendido</button>
+            </div>
+        </div>
+
+    </div> <!-- Cierre del container -->
+
+    <script>
+        // Estado de la aplicación
+        const appState = {
+            currentNews: null,
+            isAuthenticated: {% if usuario_autenticado %}true{% else %}false{% endif %},
+            currentUser: null,
+            comments: {{ comentarios_json_str|safe }},
+            replyTo: null,
+            newsList: [
+                {% for noticia in noticias %}
+                {
+                    id: {{ noticia.id }},
+                    titulo: "{{ noticia.titulo|escapejs }}",
+                    categoria: "{{ noticia.categoria|escapejs }}",
+                    fecha_publicacion: "{{ noticia.fecha_publicacion|date:'d/m/Y' }}",
+                    autor: "{{ noticia.autor.username|escapejs }}",
+                    contenido: "{{ noticia.contenido|escapejs }}",
+                    likes: {{ noticia.likes }},
+                    dislikes: {{ noticia.dislikes }}
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        }
+
+        // Elementos DOM
+        const domElements = {
+            emptyState: document.getElementById('empty-state'),
+            newsCard: document.getElementById('news-card'),
+            commentsSection: document.getElementById('comments-section'),
+            newsCategory: document.getElementById('news-category'),
+            newsTitle: document.getElementById('news-title'),
+            newsDate: document.getElementById('news-date'),
+            newsAuthor: document.getElementById('news-author'),
+            newsContent: document.getElementById('news-content'),
+            likeBtn: document.getElementById('like-btn'),
+            dislikeBtn: document.getElementById('dislike-btn'),
+            likeCount: document.getElementById('like-count'),
+            dislikeCount: document.getElementById('dislike-count'),
+            commentsCount: document.getElementById('comments-count'),
+            commentsList: document.getElementById('comments-list'),
+            authMessage: document.getElementById('auth-required-message'),
+            commentForm: document.getElementById('comment-form-container'),
+            commentContent: document.getElementById('comment-content'),
+            submitComment: document.getElementById('submit-comment'),
+            newsList: document.getElementById('news-list'),
+        };
+
+        // Función para toggle de modo autenticado
+        function toggleAuthMode(isAuthenticated) {
+            if (isAuthenticated) {
+                domElements.authMessage.style.display = 'none';
+                domElements.commentForm.style.display = 'block';
+                
+                // Habilitar botones de reacción
+                domElements.likeBtn.disabled = false;
+                domElements.dislikeBtn.disabled = false;
+                
+            } else {
+                domElements.authMessage.style.display = 'block';
+                domElements.commentForm.style.display = 'none';
+                
+                // Deshabilitar botones de reacción
+                domElements.likeBtn.disabled = true;
+                domElements.dislikeBtn.disabled = true;
+            }
+        }
+
+        // Inicialización de la aplicación
+        function initApp() {
+            // Ocultar elementos inicialmente
+            domElements.newsCard.style.display = 'none';
+            domElements.commentsSection.style.display = 'none';
+            
+            // Mostrar/ocultar elementos según autenticación
+            toggleAuthMode(appState.isAuthenticated);
+            
+            // Cargar comentarios almacenados
+            loadStoredComments();
+            
+            // Manejar el botón de volver
+            document.querySelector('.back-btn').addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // Manejar el envío de comentarios
+            domElements.submitComment.addEventListener('click', addComment);
+            
+            // Manejar reacciones
+            domElements.likeBtn.addEventListener('click', handleReaction.bind(null, 'like'));
+            domElements.dislikeBtn.addEventListener('click', handleReaction.bind(null, 'dislike'));
+            
+            // Modo demo - permite probar sin autenticación
+            const MODO_DEMO = {% if modo_demo %}true{% else %}false{% endif %};
+            
+            // Si estamos en modo demo y no hay usuario autenticado, mostrar modal
+            if (MODO_DEMO && !appState.isAuthenticated) {
+                document.getElementById('demo-modal').style.display = 'block';
+                // Simular autenticación
+                appState.isAuthenticated = true;
+                appState.currentUser = {
+                    id: {% if usuario_demo %}{{ usuario_demo.id }}{% else %}0{% endif %},
+                    username: '{% if usuario_demo %}{{ usuario_demo.username }}{% else %}usuario_demo{% endif %}',
+                    alias: 'Usuario Demo'
+                };
+                // Actualizar UI para modo autenticado
+                toggleAuthMode(true);
+            }
+            
+            // Manejar el cierre del modal de demo
+            document.getElementById('close-demo-modal').addEventListener('click', function() {
+                document.getElementById('demo-modal').style.display = 'none';
+            });
+        }
+
+        // Cargar noticia
+        function loadNews(newsId) {
+            const news = appState.newsList.find(n => n.id == newsId);  // Comparar como número
+            if (!news) return;
+            
+            // Ocultar estado vacío
+            domElements.emptyState.style.display = 'none';
+            
+            // Mostrar tarjeta de noticia
+            domElements.newsCard.style.display = 'block';
+            
+            // Mostrar sección de comentarios
+            domElements.commentsSection.style.display = 'block';
+            
+            // Actualizar UI con datos de noticia
+            appState.currentNews = news;
+            domElements.newsCategory.textContent = news.categoria;
+            domElements.newsTitle.textContent = news.titulo;
+            domElements.newsDate.textContent = "Publicado el " + news.fecha_publicacion;
+            domElements.newsAuthor.textContent = news.autor;
+            domElements.newsContent.innerHTML = news.contenido;
+            domElements.likeCount.textContent = news.likes;
+            domElements.dislikeCount.textContent = news.dislikes;
+            
+            // Cargar comentarios para esta noticia
+            loadCommentsForNews();
+            
+            // Actualizar contador de comentarios
+            updateCommentsCount();
+        }
+
+        // Cargar comentarios almacenados
+        function loadStoredComments() {
+            const stored = localStorage.getItem('newsComments');
+            const serverComments = Array.isArray(appState.comments) ? appState.comments : [];
+
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                const byId = new Map(serverComments.map(c => [c.id, c]));
+                parsed.forEach(c => byId.set(c.id, c));
+                appState.comments = Array.from(byId.values());
+            } else {
+                appState.comments = serverComments;
+                saveComments();
+            }
+        }
+
+        // Cargar comentarios para la noticia actual
+        function loadCommentsForNews() {
+            if (!appState.currentNews) return;
+            
+            // Filtrar comentarios para esta noticia específica
+            const newsComments = appState.comments.filter(
+                comment => comment.noticia_id == appState.currentNews.id
+            );
+
+            // Limpiar lista de comentarios
+            domElements.commentsList.innerHTML = '';
+            
+            if (newsComments.length === 0) {
+                // Mostrar mensaje si no hay comentarios
+                domElements.commentsList.innerHTML = `
+                    <div class="empty-comments" style="text-align: center; padding: 30px; color: var(--text-light);">
+                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+                    </div>
+                `;
+                updateCommentsCount();
+                return;
+            }
+            
+            // Separar comentarios principales de respuestas
+            const comentariosPrincipales = newsComments.filter(comment => !comment.comentario_padre);
+            const respuestas = newsComments.filter(comment => comment.comentario_padre);
+            
+            // Mostrar comentarios principales
+            comentariosPrincipales.forEach(comment => {
+                addCommentToDOM(comment, false, 0);
+                
+                // Mostrar respuestas a este comentario
+                const respuestasAEsteComentario = respuestas.filter(respuesta => 
+                    respuesta.comentario_padre == comment.id
+                );
+                
+                respuestasAEsteComentario.forEach(respuesta => {
+                    // Añadir información sobre a quién responde
+                    respuesta.responde_a = comment.usuario;
+                    addCommentToDOM(respuesta, true, 1);
+                });
+            });
+            
+            updateCommentsCount();
+        }
+
+        // Añadir comentario al DOM
+        function addCommentToDOM(comment, isReply = false, nivel = 0) {
+            const commentElement = document.createElement('div');
+            commentElement.className = `comment ${isReply ? 'reply' : ''}`;
+            commentElement.dataset.id = comment.id;
+            
+            // Aplicar indentación según el nivel de respuesta
+            const indentacion = nivel * 40; // 40px por cada nivel de anidación
+            commentElement.style.marginLeft = `${indentacion}px`;
+            
+            if (isReply && nivel > 0) {
+                commentElement.style.borderLeft = '3px solid var(--primary)';
+                commentElement.style.paddingLeft = '15px';
+                commentElement.style.backgroundColor = '#f9f9f9';
+            }
+            
+            // Formatear fecha
+            const [datePart, timePart] = comment.fecha.split(' ');
+            const [day, month, year] = datePart.split('/');
+            const [hours, minutes] = timePart.split(':');
+            const commentDate = new Date(year, month - 1, day, hours, minutes);
+            
+            const formattedDate = commentDate.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Mostrar a quién se responde si es una respuesta
+            const replyInfo = isReply && nivel > 0 ? `
+                <div class="reply-to" style="font-size: 12px; color: #666; margin-bottom: 5px;">
+                    En respuesta a <strong>${comment.responde_a || 'usuario'}</strong>
+                </div>
+            ` : '';
+            
+            commentElement.innerHTML = `
+                ${replyInfo}
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <span class="user-badge">${comment.usuario.charAt(0)}</span>
+                        ${comment.usuario}
+                    </div>
+                    <div class="comment-date">${formattedDate}</div>
+                </div>
+                <div class="comment-content">
+                    ${comment.contenido}
+                </div>
+                <div class="comment-actions">
+                    <div class="comment-action like-action ${comment.user_like ? 'active' : ''}" onclick="handleCommentLike(${comment.id})">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span>${comment.likes}</span>
+                    </div>
+                    <div class="comment-action reply-action" onclick="handleReply(${comment.id})">
+                        <i class="fas fa-reply"></i>
+                        Responder
+                    </div>
+                </div>
+            `;
+            
+            domElements.commentsList.appendChild(commentElement);
+        }
+
+        // Manejar respuesta a comentario
+        function handleReply(commentId) {
+            if (!appState.isAuthenticated) {
+                alert('Debes iniciar sesión para responder comentarios.');
+                return;
+            }
+            
+            appState.replyTo = commentId;
+            domElements.commentContent.placeholder = "Escribe tu respuesta aquí...";
+            domElements.commentContent.focus();
+            
+            // Destacar comentario al que se responde
+            document.querySelectorAll('.comment').forEach(comment => {
+                comment.style.borderLeft = 'none';
+            });
+            
+            const targetComment = document.querySelector(`.comment[data-id="${commentId}"]`);
+            if (targetComment) {
+                targetComment.style.borderLeft = '3px solid var(--primary)';
+            }
+        }
+
+        // Añadir comentario (con POST al backend para usar ID real)
+        function addComment() {
+            const content = domElements.commentContent.value.trim();
+            if (content === '') {
+                alert('Por favor escribe un comentario.');
+                return;
+            }
+            if (!appState.isAuthenticated) {
+                alert('Debes iniciar sesión para comentar.');
+                return;
+            }
+            if (!appState.currentNews) {
+                alert('Primero selecciona una noticia.');
+                return;
+            }
+
+            const body = new URLSearchParams({
+                'contenido': content,
+                'noticia': String(appState.currentNews.id),
+                'comentario_padre': appState.replyTo ? String(appState.replyTo) : ''
+            });
+
+            fetch('/comentarios/agregar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.error || 'Error publicando comentario');
+                    return;
+                }
+
+                //  Crear objeto con ID real
+                const newComment = {
+                    id: data.comentario_id,
+                    noticia_id: appState.currentNews.id,
+                    usuario: data.usuario,
+                    contenido: data.contenido,
+                    fecha: data.fecha,
+                    likes: 0,
+                    user_like: false,
+                    comentario_padre: appState.replyTo || null
+                };
+
+                // Si es una respuesta, guardar información adicional
+                if (appState.replyTo) {
+                    const comentarioPadre = appState.comments.find(c => c.id == appState.replyTo);
+                    if (comentarioPadre) {
+                        newComment.responde_a = comentarioPadre.usuario;
+                    }
+                }
+
+                appState.comments.push(newComment);
+                saveComments();
+
+                domElements.commentContent.value = '';
+                appState.replyTo = null;
+                domElements.commentContent.placeholder = "Escribe tu comentario aquí...";
+                
+                loadCommentsForNews();
+                document.querySelectorAll('.comment').forEach(c => c.style.borderLeft = 'none');
+            })
+            .catch(error => {
+                console.error('Error al agregar comentario:', error);
+                alert('No se pudo publicar el comentario.');
+            });
+        }
+
+        // Guardar comentarios en localStorage
+        function saveComments() {
+            localStorage.setItem('newsComments', JSON.stringify(appState.comments));
+        }
+            
+
+
+        // Actualizar contador de comentarios
+        function updateCommentsCount() {
+            if (!appState.currentNews) {
+                domElements.commentsCount.textContent = '0 comentarios';
+                return;
+            }
+            const count = appState.comments.filter(c => c.noticia_id === appState.currentNews.id).length;
+            domElements.commentsCount.textContent = `${count} comentario${count !== 1 ? 's' : ''}`;
+        }
+
+
+        // Manejar reacciones (like/dislike) a la noticia
+        function handleReaction(type) {
+            if (!appState.isAuthenticated) {
+                window.location.href = '/accounts/login/?next=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+            
+            fetch('/comentarios/reaccion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: new URLSearchParams({
+                    'tipo': 'noticia',
+                    'id': appState.currentNews.id.toString(),
+                    'accion': type
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar estado local
+                appState.currentNews.likes = data.likes;
+                appState.currentNews.dislikes = data.dislikes;
+                
+                // Actualizar UI
+                domElements.likeCount.textContent = data.likes;
+                domElements.dislikeCount.textContent = data.dislikes;
+                
+                if (data.user_like) {
+                    domElements.likeBtn.classList.add('active');
+                } else {
+                    domElements.likeBtn.classList.remove('active');
+                }
+                
+                if (data.user_dislike) {
+                    domElements.dislikeBtn.classList.add('active');
+                } else {
+                    domElements.dislikeBtn.classList.remove('active');
+                }
+                
+                // Actualizar también en la lista general de noticias
+                updateNewsInList(appState.currentNews.id, {
+                    likes: data.likes,
+                    dislikes: data.dislikes
+                });
+            });
+        }
+
+        function updateNewsInList(newsId, updates) {
+            const newsIndex = appState.newsList.findIndex(n => n.id == newsId);
+            if (newsIndex !== -1) {
+                // Actualizar solo los campos necesarios
+                appState.newsList[newsIndex].likes = updates.likes;
+                appState.newsList[newsIndex].dislikes = updates.dislikes;
+            }
+        }
+        
+        // Manejar "me gusta" en comentarios 
+        function handleCommentLike(commentId) {
+            if (!appState.isAuthenticated) {
+                alert('Debes iniciar sesión para dar like a comentarios.');
+                return;
+            }
+
+            fetch('/comentarios/reaccion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: new URLSearchParams({
+                    'tipo': 'comentario',
+                    'id': commentId,
+                    'accion': 'like'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    alert('No se pudo dar like.');
+                    return;
+                }
+
+                // Actualizar el comentario en appState
+                const commentIndex = appState.comments.findIndex(c => c.id == commentId);
+                if (commentIndex !== -1) {
+                    appState.comments[commentIndex].likes = data.likes;
+                    appState.comments[commentIndex].user_like = data.user_like;
+                    saveComments();
+                }
+
+                // Actualizar la UI
+                const likeElement = document.querySelector(`.comment[data-id="${commentId}"] .like-action`);
+                if (likeElement) {
+                    const countElement = likeElement.querySelector('span');
+                    if (countElement) {
+                        countElement.textContent = data.likes;
+                    }
+                    
+                    // Actualizar estado activo
+                    if (data.user_like) {
+                        likeElement.classList.add('active');
+                    } else {
+                        likeElement.classList.remove('active');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error al dar like:', error);
+            });
+        }
+
+        // Función para obtener el token CSRF
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
